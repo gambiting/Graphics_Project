@@ -10,6 +10,7 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.util.glu.GLU;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
@@ -70,21 +71,27 @@ public class Main {
 		}
 
 		//init gl
-
-
 		GL11.glEnable(GL11.GL_TEXTURE_2D);               
 		GL11.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);          
 		// enable alpha blending
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		
+		
+		//GL11.glLoadIdentity();
+		//GL11.glOrtho(0, Support.SCREEN_WIDTH, 0, Support.SCREEN_HEIGHT, 1, -1);
+		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glShadeModel(GL11.GL_SMOOTH);
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
 
+		
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
-		GL11.glOrtho(0, Support.SCREEN_WIDTH, 0, Support.SCREEN_HEIGHT, 1, -1);
+		GLU.gluPerspective (60.0f,800f/600f, 0.1f, 1000.0f);
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		GL11.glShadeModel(GL11.GL_SMOOTH);
-
-
+		
+		
+	
 
 		//load textures and font
 		try {
@@ -148,9 +155,16 @@ public class Main {
 		while (!Display.isCloseRequested() && !quit) {
 			angle+=1f;
 			grid.update();
+			
+			
 
 			// Clear the screen and depth buffer
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);	
+			GL11.glMatrixMode(GL11.GL_MODELVIEW);
+			GL11.glLoadIdentity();
+			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	
+			GLU.gluLookAt(300f, 400f, 900f, 300f, 400.0f, 0.0f, 0f,1f,0f);
+
+
 
 			//draw the player
 			player.draw();
