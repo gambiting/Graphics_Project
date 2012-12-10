@@ -71,6 +71,7 @@ public abstract class AbstractEntity  {
 
 		// draw quad
 		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glNormal3f( 0.0f, 0.0f, 1.0f); 
 		GL11.glTexCoord2f(0,0);
 		GL11.glVertex2f(-1,-1);
 		GL11.glTexCoord2f(1,0);

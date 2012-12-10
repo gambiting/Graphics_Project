@@ -55,9 +55,10 @@ public class Player {
 		GL11.glTranslatef(x, y, 0.0f);
 		GL11.glRotatef(angle, 0f, 0f, 1f);
 		GL11.glScalef(scale, scale, 0f);
-
+		
 		// draw quad
 		GL11.glBegin(GL11.GL_QUADS);
+		GL11.glNormal3f(0.0f, 0.0f, 1f);
 		GL11.glTexCoord2f(0,0);
 		GL11.glVertex2f(-1,-1);
 		GL11.glTexCoord2f(1,0);
