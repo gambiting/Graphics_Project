@@ -26,6 +26,7 @@ public class Bullet extends AbstractEntity {
 		
 		//disable textures
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		
 		//Color.red.bind();
 
@@ -47,6 +48,7 @@ public class Bullet extends AbstractEntity {
 
 		GL11.glPopMatrix();
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
+		GL11.glEnable(GL11.GL_LIGHTING);
 		
 	}
 	

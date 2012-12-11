@@ -68,8 +68,7 @@ public int prepareList()
 			currentTexture = face.texture;
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, currentTexture);
 		}
-		System.out.println(currentTexture);
-		
+
 		GL11.glColor3f(1f, 1f, 1f);
 		GL11.glBegin(GL11.GL_TRIANGLES);
 		

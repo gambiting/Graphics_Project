@@ -2,6 +2,7 @@ package b0538705;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 
 public class Explosion  extends AbstractEntity {
@@ -24,11 +25,14 @@ public class Explosion  extends AbstractEntity {
 	}
 	
 	
-	public void draw()
-	{
+	@Override
+	public void draw() {
 		update();
+		GL11.glDisable(GL11.GL_LIGHTING);
 		super.draw();
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
+
 	
 	protected void update()
 	{

@@ -11,7 +11,7 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public class Player {
 
-	static final float DEFAULT_SCALE=20f;
+	static final float DEFAULT_SCALE=30f;
 	static final float DEFAULT_ANGLE=180f;
 	static final float DEFAULT_XSPEED=4.0f;
 	static final float DEFAULT_YSPEED=0.0f;
@@ -24,12 +24,19 @@ public class Player {
 	private float ySpeed=0.0f;
 	private float angle=DEFAULT_ANGLE;
 	private float scale=DEFAULT_SCALE;
-
+	private float rollAngle = 0f;
+	private float maxRollAngle = 30f;
+	private float modelScale=0.7f;
+	
+	private ShipModel model;
 
 	public Player()
 	{
 		x=Support.SCREEN_WIDTH/2.0f;
 		y=50f;
+		model = new ShipModel("res/spaceship_blue.obj");
+		
+		
 	}
 
 	public void draw(float angle,float scale)
@@ -46,29 +53,18 @@ public class Player {
 		//enable textures(they might have been disabled for drawing primitives
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
-		Color.white.bind();
-		texture.bind();
+		//Color.white.bind();
+		//texture.bind();
 
 
 
 		GL11.glPushMatrix();
 		GL11.glTranslatef(x, y, 0.0f);
-		GL11.glRotatef(angle, 0f, 0f, 1f);
-		GL11.glScalef(scale, scale, 0f);
+		GL11.glRotatef(90, 1f, 0f, 0f);
+		GL11.glRotatef(rollAngle,0f,0f,1f);
+		GL11.glScalef(modelScale, modelScale, modelScale);
 		
-		// draw quad
-		GL11.glBegin(GL11.GL_QUADS);
-		GL11.glNormal3f(0.0f, 0.0f, 1f);
-		GL11.glTexCoord2f(0,0);
-		GL11.glVertex2f(-1,-1);
-		GL11.glTexCoord2f(1,0);
-		GL11.glVertex2f(1,-1);
-		GL11.glTexCoord2f(1,1);
-		GL11.glVertex2f(1,1);
-		GL11.glTexCoord2f(0,1);
-		GL11.glVertex2f(-1,1);
-
-		GL11.glEnd();
+		model.draw();
 
 		GL11.glPopMatrix();
 	}
@@ -78,11 +74,34 @@ public class Player {
 		if((x+xSpeed+scale)<Support.SCREEN_WIDTH && (x+xSpeed-scale)>0)
 		{
 			x+=xSpeed;
+			
+			//rolling angle
+			if(xSpeed>0 && rollAngle > (-maxRollAngle))
+			{
+				rollAngle-=3f;
+			}
+			if(xSpeed<0 && rollAngle<maxRollAngle)
+			{
+				rollAngle+=3f;
+			}
+			
 		}
 
 		if((y+ySpeed+scale)<Support.SCREEN_HEIGHT && (y+ySpeed-scale)>0)
 		{
 			y+=ySpeed;
+		}
+		
+		//anti-roll when ship is stationary
+		if(xSpeed==0 && rollAngle!=0)
+		{
+			if(rollAngle>0)
+			{
+				rollAngle-=2;
+			}else
+			{
+				rollAngle+=2f;
+			}
 		}
 	}
 

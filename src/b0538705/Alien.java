@@ -1,15 +1,19 @@
 package b0538705;
 
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 
 public class Alien extends AbstractEntity {
 	
+	public static EnemyModel enemyModel;
+	
 	public static Texture texture;
 	int counter;
 	
+	float modelScale = 0.4f;
 	public Alien()
 	{
-		y=Support.SCREEN_HEIGHT+scale;
+		y=Support.SCREEN_HEIGHT*2+scale;
 		
 		GridObject g = Grid.getFreePlace();
 		x=(float) (Math.random()*Support.SCREEN_WIDTH);
@@ -20,6 +24,8 @@ public class Alien extends AbstractEntity {
 		g.setObject(this);
 		
 		Grid.placesMap.put(this, g);
+		
+		
 	}
 
 	public Alien(float X, float Y) {
@@ -40,7 +46,17 @@ public class Alien extends AbstractEntity {
 		this.update();
 		super.update();
 	
-		super.draw();
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
+
+
+		GL11.glPushMatrix();
+		GL11.glTranslatef(x, y, 0.0f);
+		GL11.glRotatef(90, 0f, 0f, 1f);
+		GL11.glScalef(modelScale, modelScale, modelScale);
+		
+		Alien.enemyModel.draw();
+
+		GL11.glPopMatrix();
 
 	}
 	
@@ -64,12 +80,12 @@ public class Alien extends AbstractEntity {
 		
 		
 		boolean coordinatesChanged=false;
-		if(yBase!=y && Math.abs(yBase-y)>1)
+		if( Math.abs(yBase-y)>5)
 		{
 			y+=(yBase-y)/100.0f;
 			coordinatesChanged=true;
 		}
-		if(xBase!=x && Math.abs(xBase-x)>1)
+		if( Math.abs(xBase-x)>5)
 		{
 			x+=(xBase-x)/50.0f;
 			coordinatesChanged=true;

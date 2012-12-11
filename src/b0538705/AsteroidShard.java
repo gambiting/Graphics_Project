@@ -2,6 +2,7 @@ package b0538705;
 
 import java.util.ArrayList;
 
+import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.Texture;
 
 public class AsteroidShard extends AbstractEntity {
@@ -29,6 +30,15 @@ public class AsteroidShard extends AbstractEntity {
 		}
 		this.x+=this.xSpeed;
 		this.y+=this.ySpeed;
+	}
+	
+	
+
+	@Override
+	public void draw() {
+		GL11.glDisable(GL11.GL_LIGHTING);
+		super.draw();
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	@Override
