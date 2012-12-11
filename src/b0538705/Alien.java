@@ -52,7 +52,7 @@ public class Alien extends AbstractEntity {
 		GL11.glPushMatrix();
 		GL11.glTranslatef(x, y, 0.0f);
 		GL11.glRotatef(90, 0f, 0f, 1f);
-		GL11.glScalef(modelScale, modelScale, modelScale);
+		GL11.glScalef(modelScale, modelScale, modelScale*3);
 		
 		Alien.enemyModel.draw();
 

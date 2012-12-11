@@ -7,7 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -45,6 +47,8 @@ public class Main {
 	public static int ALIENS_TO_DESTROY=50;
 	private ArrayList<AbstractEntity> entities;
 	private ArrayList<Abstract3dModel> models;
+	
+	private List<ByteBuffer> replayBuffer;
 
 	private float angle = 0.0f;
 	private boolean quit = false;
@@ -219,6 +223,8 @@ public class Main {
 		player = new Player();
 		entities = new ArrayList<AbstractEntity>();
 		models = new ArrayList<Abstract3dModel>();
+		
+		replayBuffer = new ArrayList<ByteBuffer>();
 
 
 		//create the given number of aliens
@@ -368,13 +374,17 @@ public class Main {
 			displayOverlay();
 
 			//sync the display to provide 60fps
-			Display.sync(60);
+			Display.sync(30);
 			//update the display
 			Display.update();
 			
 			updateFPS();
+			
+
 		}
 	}
+	
+
 	
 	
 	public long getTime() {
