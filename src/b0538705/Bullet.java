@@ -46,7 +46,7 @@ public class Bullet extends AbstractEntity {
 		GL11.glEnd();
 
 		GL11.glPopMatrix();
-		
+		GL11.glEnable(GL11.GL_TEXTURE_2D);
 		
 	}
 	

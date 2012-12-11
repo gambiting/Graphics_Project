@@ -44,6 +44,7 @@ public class Main {
 	public static int ALIENS_NUM;
 	public static int ALIENS_TO_DESTROY=50;
 	private ArrayList<AbstractEntity> entities;
+	private ArrayList<Abstract3dModel> models;
 
 	private float angle = 0.0f;
 	private boolean quit = false;
@@ -71,19 +72,26 @@ public class Main {
 
 	private boolean left=false,right=false,up=false,down=false;
 	int objectDisplayList;
-	
+
 	//lightining values
 	private float lightAmbient[] = { 0.1f, 0.1f, 0.1f, 1.0f };  // Ambient Light Values ( NEW )
-    private float lightDiffuse[] = { 0.1f, 0.1f, 0.1f, 1.0f };      // Diffuse Light Values ( NEW )
-    private float lightPosition[] = { 200.0f, 300.0f,  2.0f, 1.0f };
-    
+	private float lightDiffuse[] = { 0.5f, 0.5f, 0.5f, 1.0f };      // Diffuse Light Values ( NEW )
+	private float lightPosition[] = { 0.0f, 0.0f, 200.0f, 1.0f };
 
-    private float lightDiffuse2[] = { 0.5f, 0.5f, 0.5f, 1.0f };      // Diffuse Light Values ( NEW )
-    private float lightPosition2[] = { 400.0f, 300.0f,  400.0f, 1.0f };
-    
-    private float material_shinyness = 50f;
-    
-    Texture treeTexture;
+	private float lightAmbient2[] = { 0.0f, 0.0f, 0.01f, 1.0f }; 
+	private float lightDiffuse2[] = { 0.2f, 0.2f, 0.2f, 1.0f };      // Diffuse Light Values ( NEW )
+	private float lightPosition2[] = { 400.0f, 200.0f,  200.0f, 1.0f };
+	
+	
+	private float fogColour[] = {0.0f,0.0f,0.0f,1.0f };
+
+	private float material_shinyness = 50f;
+
+	Texture treeTexture;
+
+	TreeModel tree1;
+	
+	long lastTime,fps;
 
 	public void start() {
 
@@ -96,62 +104,72 @@ public class Main {
 			e.printStackTrace();
 			System.exit(0);
 		}
-		GL11.glLoadIdentity();
+
 		//init gl
 		GL11.glEnable(GL11.GL_TEXTURE_2D);               
-		GL11.glClearColor(1.0f, 0.0f, 0.0f, 1.0f);          
-		
-		//GL11.glLoadIdentity();
-		//GL11.glOrtho(0, Support.SCREEN_WIDTH, 0, Support.SCREEN_HEIGHT, 1, -1);
-		//GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);          
+
+
+
+
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glLoadIdentity();
+		GLU.gluPerspective (60.0f,800f/600f, 1f, 1500.0f);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+
+		GL11.glLoadIdentity();
 		GL11.glShadeModel(GL11.GL_SMOOTH);
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glDepthFunc(GL11.GL_LESS);
 		GL11.glDepthMask(true);
-		//GL11.glEnable(GL11.GL_ALPHA_TEST);
+		GL11.glEnable(GL11.GL_ALPHA_TEST);
 		GL11.glEnable(GL11.GL_NORMALIZE); 
-		
 
-		
-		GL11.glMatrixMode(GL11.GL_PROJECTION);
-		
-		GLU.gluPerspective (90.0f,800f/600f, 1f, 1000.0f);
-		GL11.glMatrixMode(GL11.GL_MODELVIEW);
-		
 		GL11.glEnable(GL11.GL_CULL_FACE);
-		GL11.glCullFace(GL11.GL_FRONT);
-		
+		GL11.glCullFace(GL11.GL_BACK);
+
 		//enable lightning
 		GL11.glEnable(GL11.GL_LIGHTING);
-		
+
 		ByteBuffer temp = ByteBuffer.allocateDirect(16);
-        temp.order(ByteOrder.nativeOrder());
-        
-        GL11.glMaterial(GL11.GL_FRONT, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse).flip());
-        GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS,(int)material_shinyness);
-        
-        GL11.glLightf(GL11.GL_LIGHT1, GL11.GL_SPOT_CUTOFF,45f );          
-        GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());         // Position The Light
+		temp.order(ByteOrder.nativeOrder());
 
-        GL11.glLight(GL11.GL_LIGHT2, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse2).flip());              // Setup The Diffuse Light
-        GL11.glLight(GL11.GL_LIGHT2, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition2).flip()); 
-        GL11.glLight(GL11.GL_LIGHT2, GL11.GL_AMBIENT,(FloatBuffer)temp.asFloatBuffer().put(lightAmbient).flip()); 
-        GL11.glLight(GL11.GL_LIGHT2, GL11.GL_SPECULAR,(FloatBuffer)temp.asFloatBuffer().put(lightDiffuse2).flip()); 
+		GL11.glMaterial(GL11.GL_FRONT, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse).flip());
+		GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS,(int)material_shinyness);
 
-        GL11.glLightf(GL11.GL_LIGHT2, GL11.GL_CONSTANT_ATTENUATION, 0.1f);
-        GL11.glLightf(GL11.GL_LIGHT2, GL11.GL_LINEAR_ATTENUATION, 0.0f);
-        GL11.glLightf(GL11.GL_LIGHT2, GL11.GL_QUADRATIC_ATTENUATION, 0.0f);
-        
-       // GL11.glEnable(GL11.GL_LIGHT1); 
-        GL11.glEnable(GL11.GL_LIGHT2);
-        
-        GL11.glLightModeli(GL12.GL_LIGHT_MODEL_COLOR_CONTROL, GL12.GL_SEPARATE_SPECULAR_COLOR);
-        GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK,GL11.GL_AMBIENT_AND_DIFFUSE);
-        
-				
-				
 		
-	
+		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());         // Position The Light
+		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse).flip()); 
+		
+		
+		GL11.glLight(GL11.GL_LIGHT2, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse2).flip());              // Setup The Diffuse Light
+		GL11.glLight(GL11.GL_LIGHT2, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition2).flip()); 
+		GL11.glLight(GL11.GL_LIGHT2, GL11.GL_AMBIENT,(FloatBuffer)temp.asFloatBuffer().put(lightAmbient2).flip()); 
+		//GL11.glLight(GL11.GL_LIGHT2, GL11.GL_SPECULAR,(FloatBuffer)temp.asFloatBuffer().put(lightDiffuse2).flip()); 
+
+		GL11.glLightf(GL11.GL_LIGHT2, GL11.GL_CONSTANT_ATTENUATION, 0.0f);
+		GL11.glLightf(GL11.GL_LIGHT2, GL11.GL_LINEAR_ATTENUATION, 0.00009f);
+		GL11.glLightf(GL11.GL_LIGHT2, GL11.GL_QUADRATIC_ATTENUATION, 0.0f);
+
+		//GL11.glEnable(GL11.GL_LIGHT1); 
+		GL11.glEnable(GL11.GL_LIGHT2);
+
+		GL11.glLightModeli(GL12.GL_LIGHT_MODEL_COLOR_CONTROL, GL12.GL_SEPARATE_SPECULAR_COLOR);
+		GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK,GL11.GL_AMBIENT_AND_DIFFUSE);
+		
+		
+		GL11.glEnable(GL11.GL_FOG);
+		GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
+		GL11.glFog(GL11.GL_FOG_COLOR,(FloatBuffer)temp.asFloatBuffer().put(fogColour).flip());
+		GL11.glFogf(GL11.GL_FOG_DENSITY, 0.3f);
+		GL11.glHint(GL11.GL_FOG_HINT, GL11.GL_NICEST);
+		GL11.glFogf(GL11.GL_FOG_START, 400f);
+		GL11.glFogf(GL11.GL_FOG_END, 1200f);
+
+
+
+
+
 
 		//load textures and font
 		try {
@@ -180,6 +198,7 @@ public class Main {
 			e.printStackTrace();
 		}
 
+		
 
 		//init everything else
 
@@ -187,6 +206,7 @@ public class Main {
 
 		player = new Player();
 		entities = new ArrayList<AbstractEntity>();
+		models = new ArrayList<Abstract3dModel>();
 
 
 		//create the given number of aliens
@@ -202,70 +222,45 @@ public class Main {
 		entities.add(new Asteroid(Support.SCREEN_WIDTH*0.8f,Support.SCREEN_HEIGHT*0.3f));
 		
 		
+		//add trees
+		//the original tree model:
+		TreeModel orig = new TreeModel(TreeModel.DEFAULT_MODEL_PATH);
 		
-		objectDisplayList = GL11.glGenLists(1);
-		GL11.glNewList(objectDisplayList, GL11.GL_COMPILE);
-		Model m = null;
-		try {
-			m = OBJLoader.loadModel(new File("res/cartoon2.obj"));
-		} catch (Exception e1) {
-			e1.printStackTrace();
-		} 
 		
-		int currentTexture=-1;
-		int materialChanges=0;
-		//GL11.glDisable(GL11.GL_TEXTURE_2D);
-		Face face = null;
-		for(int i=0;i<m.faces.size();i++)
+		//to the left
+		for(int i=0;i<20;i++)
 		{
-			
-			
-			face=m.faces.get(i);
-			if(face.texture!=currentTexture)
-			{
-				currentTexture = face.texture;
-				GL11.glBindTexture(GL11.GL_TEXTURE_2D, currentTexture);
-				materialChanges++;
-			}
-			System.out.println(currentTexture);
-			
-			GL11.glColor3f(1f, 1f, 1f);
-			GL11.glBegin(GL11.GL_TRIANGLES);
-			
-			Vector3f n1 = m.normals.get((int) face.normal.x );
-			GL11.glNormal3f(n1.x, n1.y, n1.z);
-			Vector2f t1 = m.texVerticies.get((int) face.textures.x);
-			GL11.glTexCoord2f(t1.x, t1.y);
-			Vector3f v1 = m.verticies.get((int) face.vertex.x);
-			GL11.glVertex3f(v1.x, v1.y, v1.z);
-			
-			
-			
-			Vector3f n2 = m.normals.get((int) face.normal.y);
-			GL11.glNormal3f(n2.x, n2.y, n2.z);
-			Vector2f t2 = m.texVerticies.get((int) face.textures.y);
-			GL11.glTexCoord2f(t2.x, t2.y);
-			Vector3f v2 = m.verticies.get((int) face.vertex.y);
-			GL11.glVertex3f(v2.x, v2.y, v2.z);
-
-			
-			Vector3f n3 = m.normals.get((int) face.normal.z);
-			GL11.glNormal3f(n3.x, n3.y, n3.z);
-			Vector2f t3 = m.texVerticies.get((int) face.textures.z);
-			GL11.glTexCoord2f(t3.x, t3.y);
-			Vector3f v3 = m.verticies.get((int) face.vertex.z);
-			GL11.glVertex3f(v3.x, v3.y, v3.z);
-			
-			//System.out.println(t1.x + "/" + t1.y + "\n" + t2.x + "/" + t2.y + "\n" +t3.x + "/" + t3.y);
-			//System.out.println(v1.x + "/" + v1.y + "/" + v1.z + "\n" + v2.x + "/" + v2.y + "/" + v2.z + "\n" +v3.x + "/" + v3.y + "/" + v3.z);
-			//System.out.println(n1.x + "/" + n1.y + "/" + n1.z + "\n" + n2.x + "/" + n2.y + "/" + n2.z + "\n" +n3.x + "/" + n3.y + "/" + n3.z);
-			GL11.glEnd();
+			TreeModel tree = (TreeModel) orig.shallowCopy();
+			tree.setScale(50f);
+			tree.setX((float)Math.random()*500-500);
+			tree.setY((float)Math.random()*1000);
+			tree.setZ(200f);
+			models.add(tree);
 		}
-		//GL11.glEnable(GL11.GL_TEXTURE_2D);
-		GL11.glEndList();
 		
-		System.out.println("Material changes:" + materialChanges);
+		//at the top
+		for(int i=0;i<20;i++)
+		{
+			TreeModel tree = (TreeModel) orig.shallowCopy();
+			tree.setScale(50f);
+			tree.setX((float)Math.random()*800);
+			tree.setY((float)Math.random()*500+800);
+			tree.setZ(200f);
+			models.add(tree);
+		}
+		//and to the right
+		for(int i=0;i<20;i++)
+		{
+			TreeModel tree = (TreeModel) orig.shallowCopy();
+			tree.setScale(50f);
+			tree.setX((float)Math.random()*500+800);
+			tree.setY((float)Math.random()*1000);
+			tree.setZ(200f);
+			models.add(tree);
+		}
 
+
+		lastTime = getTime();
 		//render
 		render();
 
@@ -278,48 +273,48 @@ public class Main {
 		while (!Display.isCloseRequested() && !quit) {
 			angle+=1f;
 			grid.update();
-			
-			
+
+
 
 			// Clear the screen and depth buffer
+
+
+
 			GL11.glMatrixMode(GL11.GL_MODELVIEW);
 			GL11.glLoadIdentity();
+			GLU.gluLookAt(player.getX(), 0f, 450f, player.getX(), 300.0f, 0.0f, 0f,0f,1f);
 			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	
-			GLU.gluLookAt(player.getX()-100f, 100f, 400f, player.getX()-100f, 450.0f, 0.0f, 0f,0f,1f);
 			GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
 			GL11.glDepthMask(true);
-			
+
 			counter++;
-			
+
 			//lightPosition[1] = (float)Math.sin((double)counter/10f)*400f;
-			lightPosition2[0] =  (float)Math.sin((double)counter/10f)*400f;
-			
+			//lightPosition2[0] =  (float)Math.sin((double)counter/10f)*400f;
+
 			ByteBuffer temp = ByteBuffer.allocateDirect(16);
-	        temp.order(ByteOrder.nativeOrder());
+			temp.order(ByteOrder.nativeOrder());
 			GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());  
 			GL11.glLight(GL11.GL_LIGHT2, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition2).flip()); 
 			
-			for(int i=1;i<2;i++)
-			{
-				GL11.glPushMatrix();
-				//GL11.glColor3f(1f, 1f, 1f);
-				GL11.glTranslatef(300f, (float)i*300f, 100f);
-				GL11.glScalef(200f, 200f, 200f);
-				//GL11.glRotatef(90f, 1f, 0f, 0f);
-				GL11.glRotatef((float)counter, 0f, 1f, 1f);
-				GL11.glCallList(objectDisplayList);
-				GL11.glPopMatrix();
-				
-			}
+			
+
+			
 			//draw the player
-			//player.draw();
+			player.draw();
 
 
 			//draw all the entities
 			for(AbstractEntity e:entities)
 			{
-				//e.draw();
+				e.draw();
 			}
+			
+			for(Abstract3dModel model: models)
+			{
+				model.draw();
+			}
+				
 
 			pollInput();
 
@@ -342,22 +337,37 @@ public class Main {
 
 
 			//collisions
-			//processCollisions();
+			processCollisions();
 
 			//process enemies shooting
 			//enemyFire();
 
 			//cleaning up
-			//cleanUp();
+			cleanUp();
 
 			//display overlay
-			//displayOverlay();
+			displayOverlay();
 
 			//sync the display to provide 60fps
 			Display.sync(60);
 			//update the display
 			Display.update();
+			
+			updateFPS();
 		}
+	}
+	
+	
+	public long getTime() {
+	    return System.nanoTime() / 1000000;
+	}
+	public void updateFPS() {
+	    if (getTime() - lastTime > 1000) {
+	        Display.setTitle("FPS: " + fps); 
+	        fps = 0; //reset the FPS counter
+	        lastTime += 1000; //add one second
+	    }
+	    fps++;
 	}
 
 	public void pollInput() {
@@ -377,7 +387,7 @@ public class Main {
 					}
 					if (Keyboard.getEventKey() == Keyboard.KEY_SPACE) {
 						//shooting
-						
+
 						/*
 						 * and yes, this means that there will be one bullet fired for every key press
 						 * but that's intented and that is my method of limiting the rate of fire
@@ -412,6 +422,7 @@ public class Main {
 		//display the red bar
 
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
+		GL11.glDisable(GL11.GL_LIGHTING);
 		GL11.glPushMatrix();
 		GL11.glColor3f(1.0f, 0, 0);
 		GL11.glBegin(GL11.GL_LINES);
@@ -419,6 +430,7 @@ public class Main {
 		GL11.glVertex2f(Support.SCREEN_WIDTH, Support.SCREEN_HEIGHT*0.38f);
 		GL11.glEnd();
 		GL11.glPopMatrix();
+		
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
 		//enemies left string
@@ -473,6 +485,8 @@ public class Main {
 			fpsFont.drawString(0, 0,  string);
 			GL11.glPopMatrix();
 		}
+		
+		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
 	public void enemyFire()

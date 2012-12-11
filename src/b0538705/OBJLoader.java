@@ -58,7 +58,7 @@ public class OBJLoader {
 				{
 					String name = line.split(" ")[1];
 					currentTexture = TextureLoader.getTexture("PNG", ResourceLoader.getResourceAsStream("res/" + name + ".png"));
-					System.out.println(currentTexture.getTextureID());
+					//System.out.println(currentTexture.getTextureID());
 				}
 			}
 		}
@@ -66,10 +66,10 @@ public class OBJLoader {
 
 		reader.close();
 		
-		System.out.println(m.verticies.size() + " verticies");
+		/*System.out.println(m.verticies.size() + " verticies");
 		System.out.println(m.normals.size() + " normals");
 		System.out.println(m.texVerticies.size() + " texture coordinates");
-		System.out.println(m.faces.size() + " faces");
+		System.out.println(m.faces.size() + " faces");*/
 		return m;
 	}
 }
