@@ -21,6 +21,7 @@ public class AsteroidShard extends AbstractEntity {
 		this.setScale(DEFAULT_SCALE);
 	}
 	
+	@Override
 	public void update()
 	{
 		this.scale-=SHRINKING_RATE;

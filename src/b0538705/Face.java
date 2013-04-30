@@ -1,8 +1,6 @@
 package b0538705;
 
-import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.opengl.Texture;
 
 public class Face {
 	public Vector3f vertex = new Vector3f();

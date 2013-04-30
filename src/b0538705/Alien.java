@@ -35,12 +35,14 @@ public class Alien extends AbstractEntity {
 		counter = (int) (Math.random()*100);
 	}
 	
+	@Override
 	public void draw(float angle,float scale)
 	{
 		this.update();
 		super.draw(angle, scale);
 	}
 	
+	@Override
 	public void draw()
 	{
 		this.update();
@@ -57,9 +59,12 @@ public class Alien extends AbstractEntity {
 		Alien.enemyModel.draw();
 
 		GL11.glPopMatrix();
+		
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 
 	}
 	
+	@Override
 	protected void update()
 	{
 		
@@ -98,6 +103,7 @@ public class Alien extends AbstractEntity {
 		}
 	}
 	
+	@Override
 	public Texture getTexture()
 	{
 		return Alien.texture;

@@ -7,7 +7,7 @@ public class Bullet extends AbstractEntity {
 
 	public final float DEFAULT_SCALE=5f;
 	public final float DEFAULT_XSPEED=0.0f;
-	public final float DEFAULT_YSPEED=8.0f;
+	public final float DEFAULT_YSPEED=16.0f;
 	
 	private float xSpeed=DEFAULT_XSPEED;
 	protected float ySpeed;
@@ -19,6 +19,7 @@ public class Bullet extends AbstractEntity {
 	}
 
 
+	@Override
 	public void draw()
 	{
 		//update the object
@@ -52,6 +53,7 @@ public class Bullet extends AbstractEntity {
 		
 	}
 	
+	@Override
 	protected void update()
 	{
 		x+=xSpeed;

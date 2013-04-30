@@ -56,7 +56,7 @@ public int prepareList()
 	
 	
 	int currentTexture=-1;
-	//GL11.glDisable(GL11.GL_TEXTURE_2D);
+	GL11.glEnable(GL11.GL_TEXTURE_2D);
 	Face face = null;
 	for(int i=0;i<m.faces.size();i++)
 	{
@@ -101,7 +101,7 @@ public int prepareList()
 		//System.out.println(n1.x + "/" + n1.y + "/" + n1.z + "\n" + n2.x + "/" + n2.y + "/" + n2.z + "\n" +n3.x + "/" + n3.y + "/" + n3.z);
 		GL11.glEnd();
 	}
-	//GL11.glEnable(GL11.GL_TEXTURE_2D);
+	GL11.glDisable(GL11.GL_TEXTURE_2D);
 	GL11.glEndList();
 	
 	

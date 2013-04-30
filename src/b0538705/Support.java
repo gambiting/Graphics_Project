@@ -2,8 +2,6 @@ package b0538705;
 
 import java.util.ArrayList;
 
-import org.newdawn.slick.opengl.Texture;
-
 public class Support {
 
 	public static int SCREEN_WIDTH = 800;

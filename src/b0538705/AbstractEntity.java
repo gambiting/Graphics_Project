@@ -87,6 +87,7 @@ public abstract class AbstractEntity  {
 		GL11.glEnd();
 
 		GL11.glPopMatrix();
+		GL11.glDisable(GL11.GL_TEXTURE_2D);
 	}
 	
 	

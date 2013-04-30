@@ -14,11 +14,11 @@ public class Grid {
 
 
 
-	static final int WIDTH=8;
-	static final int HEIGHT=4;
+	static final int WIDTH=5;
+	static final int HEIGHT=4 ;
 
-	static final float DEFAULT_XSPEED=2.0f;
-	static final float DEFAULT_YSPEED=-0.05f;
+	static final float DEFAULT_XSPEED=4.0f;
+	static final float DEFAULT_YSPEED=-0.1f;
 	
 	static float DEFAULT_X;
 	static float DEFAULT_Y;
@@ -43,10 +43,10 @@ public class Grid {
 		//create a new map binding entities to their places
 		placesMap = new HashMap<AbstractEntity,GridObject>();
 		//calculate x
-		x=(Support.SCREEN_WIDTH/2)-(WIDTH*(Alien.DEFAULT_SCALE*2f+SPACING*2))/2f;
+		x=(Support.SCREEN_WIDTH/2)-(WIDTH*(AbstractEntity.DEFAULT_SCALE*2f+SPACING*2))/2f;
 		Grid.DEFAULT_X= x;
 		//calculate y
-		y=(Support.SCREEN_HEIGHT*0.75f)-(HEIGHT*(Alien.DEFAULT_SCALE*2f+SPACING))/2;
+		y=(Support.SCREEN_HEIGHT*0.75f)-(HEIGHT*(AbstractEntity.DEFAULT_SCALE*2f+SPACING))/2;
 		Grid.DEFAULT_Y=y;
 
 		//generate grid objects
@@ -57,12 +57,12 @@ public class Grid {
 				/*
 				 * easy formula - each entity occupies its width/height+spacing
 				 */
-				places.add(new GridObject(x+j*(Alien.DEFAULT_SCALE+SPACING)*2+Alien.DEFAULT_SCALE+SPACING,y+i*(Alien.DEFAULT_SCALE+SPACING)*2+Alien.DEFAULT_SCALE+SPACING));
+				places.add(new GridObject(x+j*(AbstractEntity.DEFAULT_SCALE+SPACING)*2+AbstractEntity.DEFAULT_SCALE+SPACING,y+i*(AbstractEntity.DEFAULT_SCALE+SPACING)*2+AbstractEntity.DEFAULT_SCALE+SPACING));
 			}
 		}
 
-		gridWidth = Alien.DEFAULT_SCALE*2f*WIDTH + WIDTH * SPACING*2f;
-		gridHeight = Alien.DEFAULT_SCALE*2f*HEIGHT + HEIGHT * SPACING*2f;
+		gridWidth = AbstractEntity.DEFAULT_SCALE*2f*WIDTH + WIDTH * SPACING*2f;
+		gridHeight = AbstractEntity.DEFAULT_SCALE*2f*HEIGHT + HEIGHT * SPACING*2f;
 
 
 	}

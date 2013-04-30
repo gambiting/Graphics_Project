@@ -7,7 +7,7 @@ import org.newdawn.slick.opengl.Texture;
 
 public class Explosion  extends AbstractEntity {
 	
-	public final int animationDuration=30;
+	public final int animationDuration=15;
 	public Texture texture;
 	public static ArrayList<Texture> animationTextures=new ArrayList<Texture>();
 	
@@ -34,6 +34,7 @@ public class Explosion  extends AbstractEntity {
 	}
 
 	
+	@Override
 	protected void update()
 	{
 		numOfRenderedFrames++;
@@ -50,6 +51,7 @@ public class Explosion  extends AbstractEntity {
 		}
 	}
 	
+	@Override
 	public Texture getTexture()
 	{
 		return this.texture;

@@ -1,19 +1,14 @@
 package b0538705;
 
 
-import java.util.ArrayList;
-
 import org.lwjgl.opengl.GL11;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.opengl.Texture;
-import org.newdawn.slick.opengl.TextureLoader;
-import org.newdawn.slick.util.ResourceLoader;
 
 public class Player {
 
 	static final float DEFAULT_SCALE=30f;
 	static final float DEFAULT_ANGLE=180f;
-	static final float DEFAULT_XSPEED=4.0f;
+	static final float DEFAULT_XSPEED=8.0f;
 	static final float DEFAULT_YSPEED=0.0f;
 
 	public static Texture texture;
@@ -71,18 +66,18 @@ public class Player {
 
 	public void update()
 	{
-		if((x+xSpeed+scale)<Support.SCREEN_WIDTH && (x+xSpeed-scale)>0)
+		if((x+xSpeed+scale)<Support.SCREEN_WIDTH && (x+xSpeed-scale)>0 && xSpeed!=0)
 		{
 			x+=xSpeed;
 			
 			//rolling angle
 			if(xSpeed>0 && rollAngle > (-maxRollAngle))
 			{
-				rollAngle-=3f;
+				rollAngle-=6f;
 			}
 			if(xSpeed<0 && rollAngle<maxRollAngle)
 			{
-				rollAngle+=3f;
+				rollAngle+=6f;
 			}
 			
 		}
@@ -97,11 +92,13 @@ public class Player {
 		{
 			if(rollAngle>0)
 			{
-				rollAngle-=2;
+				rollAngle-=3;
+				
 			}else
 			{
-				rollAngle+=2f;
+				rollAngle+=3f;
 			}
+
 		}
 	}
 

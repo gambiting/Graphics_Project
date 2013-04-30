@@ -2,13 +2,13 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Documents/lwjgl/jar/slick.jar"/>
-	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Documents/lwjgl/jar/lwjgl.jar">
+	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Dropbox/CSC3201 - graphics/Graphics_Project/lib/lwjgl/jar/slick.jar"/>
+	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Dropbox/CSC3201 - graphics/Graphics_Project/lib/lwjgl/jar/lwjgl.jar">
 		<attributes>
-			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/Users/wojciechmusialkiewicz/Documents/lwjgl/native/macosx"/>
+			<attribute name="org.eclipse.jdt.launching.CLASSPATH_ATTR_LIBRARY_PATH_ENTRY" value="/Users/wojciechmusialkiewicz/Dropbox/CSC3201 - graphics/Graphics_Project/lib/lwjgl/native/macosx"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Documents/lwjgl/jar/lwjgl_util.jar"/>
-	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Documents/lwjgl/jar/jinput.jar"/>
+	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Dropbox/CSC3201 - graphics/Graphics_Project/lib/lwjgl/jar/lwjgl_util.jar"/>
+	<classpathentry kind="lib" path="/Users/wojciechmusialkiewicz/Dropbox/CSC3201 - graphics/Graphics_Project/lib/lwjgl/jar/jinput.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

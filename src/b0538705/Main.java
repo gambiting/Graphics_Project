@@ -1,27 +1,17 @@
 package b0538705;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.LWJGLException;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.util.glu.GLU;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.UnicodeFont;
 import org.newdawn.slick.font.effects.ColorEffect;
 import org.newdawn.slick.opengl.Texture;
@@ -30,7 +20,6 @@ import org.newdawn.slick.util.ResourceLoader;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 import java.nio.FloatBuffer;
 
 
@@ -47,8 +36,7 @@ public class Main {
 	public static int ALIENS_TO_DESTROY=50;
 	private ArrayList<AbstractEntity> entities;
 	private ArrayList<Abstract3dModel> models;
-	
-	private List<ByteBuffer> replayBuffer;
+
 
 	private float angle = 0.0f;
 	private boolean quit = false;
@@ -85,8 +73,8 @@ public class Main {
 	private float lightAmbient2[] = { 0.0f, 0.0f, 0.01f, 1.0f }; 
 	private float lightDiffuse2[] = { 0.2f, 0.2f, 0.2f, 1.0f };      // Diffuse Light Values ( NEW )
 	private float lightPosition2[] = { 400.0f, 300.0f,  200.0f, 1.0f };
-	
-	
+
+
 	private float fogColour[] = {0.0f,0.0f,0.1f,1.0f };
 
 	private float material_shinyness = 50f;
@@ -94,10 +82,12 @@ public class Main {
 	Texture treeTexture;
 
 	TreeModel tree1;
-	
+
 	boolean firstPersonView = false;
-	
+
 	long lastTime,fps;
+
+	boolean showReplay = false;
 
 	public void start() {
 
@@ -143,11 +133,11 @@ public class Main {
 		GL11.glMaterial(GL11.GL_FRONT, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse).flip());
 		GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS,(int)material_shinyness);
 
-		
+
 		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());         // Position The Light
 		GL11.glLight(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse).flip()); 
-		
-		
+
+
 		GL11.glLight(GL11.GL_LIGHT2, GL11.GL_DIFFUSE, (FloatBuffer)temp.asFloatBuffer().put(lightDiffuse2).flip());              // Setup The Diffuse Light
 		GL11.glLight(GL11.GL_LIGHT2, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition2).flip()); 
 		GL11.glLight(GL11.GL_LIGHT2, GL11.GL_AMBIENT,(FloatBuffer)temp.asFloatBuffer().put(lightAmbient2).flip()); 
@@ -162,8 +152,8 @@ public class Main {
 
 		GL11.glLightModeli(GL12.GL_LIGHT_MODEL_COLOR_CONTROL, GL12.GL_SEPARATE_SPECULAR_COLOR);
 		GL11.glColorMaterial(GL11.GL_FRONT_AND_BACK,GL11.GL_AMBIENT_AND_DIFFUSE);
-		
-		
+
+
 		GL11.glEnable(GL11.GL_FOG);
 		GL11.glFogi(GL11.GL_FOG_MODE, GL11.GL_LINEAR);
 		GL11.glFog(GL11.GL_FOG_COLOR,(FloatBuffer)temp.asFloatBuffer().put(fogColour).flip());
@@ -203,18 +193,18 @@ public class Main {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		
+
+
 		//load the enemy's model
 		Alien.enemyModel = new EnemyModel("res/fighter.obj");
-		
+
 		//load the asteroid model
 		Asteroid.asteroidModel= new AsteroidModel("res/asteroid.obj");
-		
+
 
 		//initialize ground
 		Ground.initGround();
-		
+
 
 		//init everything else
 
@@ -223,8 +213,7 @@ public class Main {
 		player = new Player();
 		entities = new ArrayList<AbstractEntity>();
 		models = new ArrayList<Abstract3dModel>();
-		
-		replayBuffer = new ArrayList<ByteBuffer>();
+
 
 
 		//create the given number of aliens
@@ -238,13 +227,13 @@ public class Main {
 		entities.add(new Asteroid(Support.SCREEN_WIDTH*0.4f,Support.SCREEN_HEIGHT*0.3f));
 		entities.add(new Asteroid(Support.SCREEN_WIDTH*0.6f,Support.SCREEN_HEIGHT*0.3f));
 		entities.add(new Asteroid(Support.SCREEN_WIDTH*0.8f,Support.SCREEN_HEIGHT*0.3f));
-		
-		
+
+
 		//add trees
 		//the original tree model:
 		TreeModel orig = new TreeModel(TreeModel.DEFAULT_MODEL_PATH);
-		
-		
+
+
 		//to the left
 		for(int i=0;i<25;i++)
 		{
@@ -255,7 +244,7 @@ public class Main {
 			tree.setZ(200f);
 			models.add(tree);
 		}
-		
+
 		//at the top
 		for(int i=0;i<10;i++)
 		{
@@ -289,114 +278,117 @@ public class Main {
 	{
 		int counter=0;
 		while (!Display.isCloseRequested() && !quit) {
-			angle+=1f;
-			grid.update();
+
+				angle+=1f;
+				grid.update();
 
 
 
-			// set up the projection matrix
-			GL11.glMatrixMode(GL11.GL_PROJECTION);
-			GL11.glLoadIdentity();
-			GLU.gluPerspective (60.0f,800f/600f, 1f, 1500.0f);
+				// set up the projection matrix
+				GL11.glMatrixMode(GL11.GL_PROJECTION);
+				GL11.glLoadIdentity();
+				GLU.gluPerspective (60.0f,800f/600f, 1f, 1500.0f);
 
-			//position the camera
-			GL11.glMatrixMode(GL11.GL_MODELVIEW);
-			GL11.glLoadIdentity();
-			
-			//first person view or not?
-			if(firstPersonView)
-			{
-				GLU.gluLookAt(player.getX(), -120f, 140f, player.getX(), 250.0f, 0.0f, 0f,0f,1f);
-			}else
-			{
-				GLU.gluLookAt(player.getX(), -50f, 400f, player.getX(), 250.0f, 0.0f, 0f,0f,1f);
-			}
-			
-			GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	
-			GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
-			GL11.glDepthMask(true);
+				//position the camera
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				GL11.glLoadIdentity();
 
+				//first person view or not?
+				if(firstPersonView)
+				{
+					GLU.gluLookAt(player.getX(), -120f, 140f, player.getX(), 250.0f, 0.0f, 0f,0f,1f);
+				}else
+					GLU.gluLookAt(player.getX(), -50f, 400f, player.getX(), 230.0f, 0.0f, 0f,0f,1f);
+				{
+				}
 
-			ByteBuffer temp = ByteBuffer.allocateDirect(16);
-			temp.order(ByteOrder.nativeOrder());
-			GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());  
-			GL11.glLight(GL11.GL_LIGHT2, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition2).flip()); 
-			
-			Ground.drawGround();
-
-			
-			//draw the player
-			player.draw();
+				GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);	
+				GL11.glAlphaFunc(GL11.GL_GREATER, 0.5f);
+				GL11.glDepthMask(true);
 
 
-			//draw all the entities
-			for(AbstractEntity e:entities)
-			{
-				e.draw();
-			}
-			
-			for(Abstract3dModel model: models)
-			{
-				model.draw();
-			}
+				ByteBuffer temp = ByteBuffer.allocateDirect(16);
+				temp.order(ByteOrder.nativeOrder());
+				GL11.glLight(GL11.GL_LIGHT1, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition).flip());  
+				GL11.glLight(GL11.GL_LIGHT2, GL11.GL_POSITION,(FloatBuffer)temp.asFloatBuffer().put(lightPosition2).flip()); 
+
+				Ground.drawGround();
+				//draw the player
+				player.draw();
+
+
+				//draw all the entities
+				for(AbstractEntity e:entities)
+				{
+					e.draw();
+				}
 				
-
-			pollInput();
-
-			//if left is pressed,but not right
-			if(left && !right)
-			{
-				player.setxSpeed(-Player.DEFAULT_XSPEED);
-
-			}
-			//if right is pressed,but not left
-			else if(!left && right)
-			{
-				player.setxSpeed(Player.DEFAULT_XSPEED);
-			}
-			//if neither left nor right are pressed
-			else if(!left && !right)
-			{
-				player.setxSpeed(0f);
-			}
+				for(Abstract3dModel model: models)
+				{
+					model.draw();
+				}
 
 
-			//collisions
-			processCollisions();
+				pollInput();
 
-			//process enemies shooting
-			enemyFire();
+				//if left is pressed,but not right
+				if(left && !right)
+				{
+					player.setxSpeed(-Player.DEFAULT_XSPEED);
 
-			//cleaning up
-			cleanUp();
+				}
+				//if right is pressed,but not left
+				else if(!left && right)
+				{
+					player.setxSpeed(Player.DEFAULT_XSPEED);
+				}
+				//if neither left nor right are pressed
+				else if(!left && !right)
+				{
+					player.setxSpeed(0f);
+				}
 
-			//display overlay
-			displayOverlay();
 
-			//sync the display to provide 60fps
-			Display.sync(30);
-			//update the display
-			Display.update();
+				//collisions
+				processCollisions();
+
+				//process enemies shooting
+				enemyFire();
+
+				//cleaning up
+				cleanUp();
+
+				//display overlay
+				displayOverlay();
+
+				
+				//sync the display to provide 60fps
+				Display.sync(30);
+				//update the display
+				Display.update();
+
+				updateFPS();
+
+
 			
-			updateFPS();
-			
-
 		}
 	}
-	
 
-	
-	
+
+
+
+
+
 	public long getTime() {
-	    return System.nanoTime() / 1000000;
+		return System.nanoTime() / 1000000;
 	}
 	public void updateFPS() {
-	    if (getTime() - lastTime > 1000) {
-	        Display.setTitle("FPS: " + fps); 
-	        fps = 0; //reset the FPS counter
-	        lastTime += 1000; //add one second
-	    }
-	    fps++;
+		if (getTime() - lastTime > 1000) {
+			Display.setTitle("FPS: " + fps); 
+			fps = 0; //reset the FPS counter
+			lastTime += 1000; //add one second
+		}
+		fps++;
 	}
 
 	public void pollInput() {
@@ -412,6 +404,8 @@ public class Main {
 					if (Keyboard.getEventKey() == Keyboard.KEY_V) {
 						firstPersonView=!firstPersonView;
 					}
+
+
 					if (Keyboard.getEventKey() == Keyboard.KEY_LEFT) {
 						left=true;
 					}
@@ -463,16 +457,16 @@ public class Main {
 		GL11.glVertex2f(Support.SCREEN_WIDTH, Support.SCREEN_HEIGHT*0.38f);
 		GL11.glEnd();
 		GL11.glPopMatrix();
-		
+
 		//change the projection matrix to ortographic
 		GL11.glMatrixMode(GL11.GL_PROJECTION);
 		GL11.glLoadIdentity();
 		GL11.glOrtho(0, Support.SCREEN_WIDTH, 0, Support.SCREEN_HEIGHT, 1, -1);
-		
+
 		//back to modelview
 		GL11.glMatrixMode(GL11.GL_MODELVIEW);
 		GL11.glLoadIdentity();
-		
+
 		//draw black bar at the bottom
 		GL11.glDisable(GL11.GL_TEXTURE_2D);
 
@@ -483,7 +477,7 @@ public class Main {
 		GL11.glVertex3f(0, fpsFont.getHeight("0")+10,0.1f);
 		GL11.glVertex3f(0, 0,0.1f);
 		GL11.glEnd();
-		
+
 		//draw blue line at the top
 		GL11.glColor3f(0.0f, 0.0f, 1.0f);
 		GL11.glBegin(GL11.GL_LINES);
@@ -491,7 +485,7 @@ public class Main {
 		GL11.glVertex3f(0, fpsFont.getHeight("0")+10,0.1f);
 		GL11.glEnd();
 
-		
+
 		//draw strings
 		GL11.glEnable(GL11.GL_TEXTURE_2D);
 
@@ -547,7 +541,7 @@ public class Main {
 			fpsFont.drawString(0, 0,  string);
 			GL11.glPopMatrix();
 		}
-		
+
 		GL11.glEnable(GL11.GL_LIGHTING);
 	}
 
@@ -568,7 +562,7 @@ public class Main {
 			{
 
 				//a random enemy among these will shoot
-				int enemyToShoot = (int) Math.round((Math.random()*(double)(enemies.size()-1)));
+				int enemyToShoot = (int) Math.round((Math.random()*(enemies.size()-1)));
 
 				//get that enemy object
 				AbstractEntity a = enemies.get(enemyToShoot);
@@ -639,6 +633,9 @@ public class Main {
 								//add an explosion at that spot
 								Support.entitiesToAdd.add(new Explosion(e2.getX(), e2.getY()));
 
+
+								showReplay=true;
+
 								//TESTING - shooting bullets every time an enemy is destroyed
 								/*for(AbstractEntity a:grid.findEnemiesWithClearLineOfSight())
 								{
@@ -663,7 +660,7 @@ public class Main {
 
 
 								//make the asteroid 10% smaller with every hit
-								e2.setScale(Asteroid.DEFAULT_SCALE-Asteroid.DEFAULT_SCALE*(float)hitsTaken*0.1f);
+								e2.setScale(Asteroid.DEFAULT_SCALE-Asteroid.DEFAULT_SCALE*hitsTaken*0.1f);
 								((Asteroid)e2).modelScale*=0.9;
 
 								//increase the number of hits taken
@@ -767,7 +764,7 @@ public class Main {
 					grid.setySpeed(Grid.DEFAULT_YSPEED);
 
 					//reset positions on the grid using the difference on both axis
-					for(GridObject g:grid.places)
+					for(GridObject g:Grid.places)
 					{
 						g.setX(g.getX()-diffX);
 						g.setY(g.getY()-diffY);

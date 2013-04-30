@@ -3,8 +3,6 @@ package b0538705;
 import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.util.vector.Vector2f;
-import org.lwjgl.util.vector.Vector3f;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
